@@ -88,7 +88,7 @@ stats 28-02-2026
 Получаем ответ (на английском):
 ```
 Your statistics as of 28-02-2026:
-Total capital: 35000.00 rubles
+Total capital: -5000.00 rubles
 This month, the loss amounted to 5000.00 rubles.
 Income: 80000.00 rubles
 Expenses: 85000.00 rubles
@@ -108,7 +108,7 @@ stats 15-02-2026
 Получаем ответ
 ```
 Your statistics as of 15-02-2026:
-Total capital: 50000.00 rubles
+Total capital: 10000.00 rubles
 This month, the profit amounted to 10000.00 rubles.
 Income: 40000.00 rubles
 Expenses: 30000.00 rubles
@@ -120,6 +120,7 @@ Details (category: amount):
 ```
 
 Обратите внимание:
+* Total capital - это сумма всех доходов и расходов до указанной даты
 * Статьи расходов сортируются по алфавиту.
 
 * Если расходов в периоде не было - просто не печатаем нумерованный спискок, оставляем строчку с двоеточием.
