@@ -39,9 +39,7 @@ financial_transactions_storage: list[dict[str, Any]] = []
 
 
 def is_leap_year(year: int) -> bool:
-    if ((year % 4 == 0) and (year % 100 != 0)) or (year % 400 == 0):
-        return True
-    return False
+    return ((year % 4 == 0) and (year % 100 != 0)) or (year % 400 == 0)
 
 
 def get_days_in_month(month: int, year: int) -> int:
@@ -77,8 +75,8 @@ def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
 def extract_amount(maybe_amount: str) -> float | None:
     maybe_amount = maybe_amount.replace(",", ".")
 
-    if maybe_amount.startswith('-'):
-        if maybe_amount.count('-') > 1:
+    if maybe_amount.startswith("-"):
+        if maybe_amount.count("-") > 1:
             return None
         amount_str = maybe_amount[1:]
     else:
@@ -109,8 +107,7 @@ def validate_category(name_of_category: str) -> bool:
 
 
 def get_target_category(category_name: str) -> str:
-    target_category = category_name.split("::", maxsplit=1)[1]
-    return target_category
+    return category_name.split("::", maxsplit=1)[1]
 
 
 def save_transaction() -> None:
@@ -132,7 +129,7 @@ def income_handler(amount: float, income_date: str) -> str:
 
 
 def cost_handler(category_name: str, amount: float, income_date: str) -> str:
-    if validate_category(category_name) == False:
+    if not validate_category(category_name):
         save_transaction()
         return NOT_EXISTS_CATEGORY
 
@@ -150,9 +147,9 @@ def cost_handler(category_name: str, amount: float, income_date: str) -> str:
 
 
 def cost_categories_handler() -> str:
-    return "\n".join({f"{common_category}::{target_category}"
-                      for common_category, subcategories in EXPENSE_CATEGORIES.items()
-                      for target_category in subcategories})
+    return "\n".join([f"{common_category}::{target_category}"
+                    for common_category, subcategories in EXPENSE_CATEGORIES.items()
+                    for target_category in subcategories])
 
 
 def is_same_month(first_date: tuple[int, int, int], second_date: tuple[int, int, int]) -> bool:
@@ -214,8 +211,8 @@ def stats_handler(report_date: str) -> str:
     ]
 
     sorted_categories = sorted(detailes_by_category.items(), key=lambda item: item[0].lower())
-    for id, (category_name, amount) in enumerate(sorted_categories, start=1):
-        statistics.append(f"{id}. {category_name}: {amount:.2f}")
+    for idx, (category_name, amount) in enumerate(sorted_categories, start=1):
+        statistics.append(f"{idx}. {category_name}: {amount:.2f}")
 
     return "\n".join(statistics)
 
