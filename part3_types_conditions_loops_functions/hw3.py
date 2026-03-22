@@ -29,7 +29,7 @@ DAYS_IN_MONTH = (
 DATA_DATE = tuple[int, int, int]
 RESULT_OF_CALC = tuple[float, float, dict[str, float]]
 DETAILES_DATA = dict[str, float]
-TRANSACTION_DATA = list[dict[str, Any]]
+TRANSACTION_DATA = dict[str, Any]
 DETAILES_CAT_DATA = dict[str, float]
 
 EXPENSE_CATEGORIES = {
@@ -197,9 +197,9 @@ def process_income_transaction(amount: float, month_income: float) -> float:
 
 
 def process_expense_transaction(
-    amount: float, 
-    category: str, 
-    month_expenses: float, 
+    amount: float,
+    category: str,
+    month_expenses: float,
     details_by_category: DETAILES_CAT_DATA
 ) -> tuple[float, DETAILES_CAT_DATA]:
     target_category = get_target_category(category)
@@ -208,8 +208,8 @@ def process_expense_transaction(
 
 
 def process_transaction(
-    transaction: TRANSACTION_DATA, 
-    date: DATA_DATE, 
+    transaction: TRANSACTION_DATA,
+    date: DATA_DATE,
     details_by_category: DETAILES_CAT_DATA
 ) -> RESULT_OF_CALC:
     month_income = 0
