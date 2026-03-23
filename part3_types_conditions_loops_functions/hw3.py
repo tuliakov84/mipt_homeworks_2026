@@ -180,7 +180,8 @@ def is_date_before_or_equal(date1: DATA_DATE, date2: DATA_DATE) -> bool:
 
 def calculate_month_stats(date: DATA_DATE) -> RESULT_OF_CALC:
     details_by_category: dict[str, float] = {}
-    result = [float(0), float(0), {}]
+    month_income = float(0)
+    month_expenses = float(0)
     for transaction in financial_transactions_storage:
         if not transaction:
             continue
@@ -188,12 +189,11 @@ def calculate_month_stats(date: DATA_DATE) -> RESULT_OF_CALC:
         if check_info_tr(transaction, date):
             continue
 
-        month_income, month_expenses, details_by_category = process_transaction(transaction, date, details_by_category)
-        result[0] = result[0] + month_income
-        result[1] = result[1] + month_expenses
-        result[2] = details_by_category
+        income, expenses, details_by_category = process_transaction(transaction, date, details_by_category)
+        month_income += income
+        month_expenses += expenses
 
-    return result[0], result[1], result[2]
+    return month_income, month_expenses, details_by_category
 
 
 def process_income_transaction(amount: float, month_income: float) -> float:
@@ -215,17 +215,14 @@ def check_info_tr(
     transaction: TRANSACTION_DATA,
     date: DATA_DATE
 ) -> bool:
-    tr_date = transaction.get(AMOUNT_KEY)
+    tr_date = transaction.get(DATE_KEY)
     if tr_date is None:
         return True
 
     if not is_same_month(tr_date, date):
         return True
 
-    if is_date_before_or_equal(date, tr_date):
-        return True
-
-    return False
+    return not bool(is_date_before_or_equal(date, tr_date))
 
 
 def process_transaction(
@@ -239,12 +236,16 @@ def process_transaction(
     if check_info_tr(transaction, date):
         return month_income, month_expenses, details_by_category
 
+    amount = transaction.get(AMOUNT_KEY)
+    if amount is None:
+        return month_income, month_expenses, details_by_category
+
     category = transaction.get(CATEGORY_KEY)
     if category is None:
-        month_income = process_income_transaction(float(transaction.get(AMOUNT_KEY)), float(month_income))
+        month_income = process_income_transaction(amount, month_income)
     else:
         month_expenses, details_by_category = process_expense_transaction(
-            float(transaction.get(AMOUNT_KEY)), category, float(month_expenses), details_by_category
+            amount, category, month_expenses, details_by_category
         )
 
     return month_income, month_expenses, details_by_category
