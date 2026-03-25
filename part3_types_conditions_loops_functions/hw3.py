@@ -141,19 +141,19 @@ def income_handler(amount: float, income_date: str) -> str:
 
 def cost_handler(category_name: str, amount: float, income_date: str) -> str:
     if not validate_category(category_name):
-        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
+        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: income_date})
         return NOT_EXISTS_CATEGORY
 
     if amount <= 0:
-        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
+        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: income_date})
         return NONPOSITIVE_VALUE_MSG
 
     date = extract_date(income_date)
     if date is None:
-        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
+        save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: income_date})
         return INCORRECT_DATE_MSG
 
-    save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
+    save_transaction({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: income_date})
     return OP_SUCCESS_MSG
 
 
