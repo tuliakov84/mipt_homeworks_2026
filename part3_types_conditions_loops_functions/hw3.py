@@ -57,8 +57,7 @@ def is_leap_year(year: int) -> bool:
 def get_days_in_month(month: int, year: int) -> int:
     if month == FEBRUARY_NUMBER:
         if (is_leap_year(year)):
-            return 29
-        return 28
+            return DAYS_IN_MONTH[month - 1] + 1
     return DAYS_IN_MONTH[month - 1]
 
 
@@ -98,7 +97,7 @@ def extract_amount(maybe_amount: str) -> float | None:
         return None
 
     for symbol in amount_str:
-        if symbol not in "0123456789.":
+        if not symbol.isdigit():
             return None
 
     amount = float(maybe_amount)
@@ -122,21 +121,21 @@ def get_target_category(category_name: str) -> str:
     return category_name.split("::", maxsplit=1)[1]
 
 
-def save_transaction() -> None:
-    financial_transactions_storage.append({})
+def save_transaction(transaction: dict[str, Any]) -> None:
+    financial_transactions_storage.append(transaction)
 
 
 def income_handler(amount: float, income_date: str) -> str:
     if amount <= 0:
-        save_transaction()
+        save_transaction({AMOUNT_KEY: amount, DATE_KEY: date})
         return NONPOSITIVE_VALUE_MSG
 
     date = extract_date(income_date)
     if date is None:
-        save_transaction()
+        save_transaction({AMOUNT_KEY: amount, DATE_KEY: date})
         return INCORRECT_DATE_MSG
 
-    financial_transactions_storage.append({AMOUNT_KEY: amount, DATE_KEY: date})
+    save_transaction({AMOUNT_KEY: amount, DATE_KEY: date})
     return OP_SUCCESS_MSG
 
 
@@ -154,7 +153,7 @@ def cost_handler(category_name: str, amount: float, income_date: str) -> str:
         save_transaction()
         return INCORRECT_DATE_MSG
 
-    financial_transactions_storage.append({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
+    save_transaction.append({CATEGORY_KEY: category_name, AMOUNT_KEY: amount, DATE_KEY: date})
     return OP_SUCCESS_MSG
 
 
@@ -165,13 +164,19 @@ def cost_categories_handler() -> str:
         for target_category in subcategories
     ])
 
-
+#тут типо скобочки, поэтому check это bool
+#я проверяю что номер дня равер номеру другого дня
+#и номер месяца равн номеру другого месяца
+#CI ругался на сложность условия в if, поэтому пришлось разделить
 def is_same_month(data1: DATA_DATE, data2: DATA_DATE) -> bool:
-    first_check = data1[1] == data2[1]
-    second_check = data1[2] == data2[2]
+    first_check = (data1[1] == data2[1])
+    second_check = (data1[2] == data2[2])
     return first_check and second_check
 
-
+#проверяем именно сначала год, потом месяц, потом день
+#потому что если я верну true на проверке дня это не значит, что
+#дата реально была до другой, врдуг день рантше, а год позднее
+#поэтому проверяем в обратном порядке, ну и на <, а не на >
 def is_date_before_or_equal(date1: DATA_DATE, date2: DATA_DATE) -> bool:
     for i in range(2, -1, -1):
         if date2[i] != date1[i]:
@@ -382,11 +387,7 @@ def handle_stats_command(input_parts: list[str]) -> None:
     print(stats_handler(input_parts[1]))
 
 
-def dispatch_command() -> bool:
-    input_line = input().strip()
-    if not input_line:
-        return False
-
+def dispatch_command(input_line: str) -> bool:
     input_parts = input_line.split()
     command_name = input_parts[0]
 
@@ -405,7 +406,11 @@ def dispatch_command() -> bool:
 def main() -> None:
     false = True
     while false:
-        false = dispatch_command()
+        input_line = input().strip()
+        if not input_line:
+            false = False
+        else:
+            false = dispatch_command(input_line)
 
 
 if __name__ == "__main__":
