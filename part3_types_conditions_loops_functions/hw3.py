@@ -95,8 +95,8 @@ def extract_amount(maybe_amount: str) -> float | None:
     if amount_str.count(".") > 1:
         return None
 
-    for symbol in amount_str:
-        if not symbol.isdigit() and symbol != ".":
+    for str_part in amount_str.split("."):
+        if not str_part.isdigit():
             return None
 
     amount = float(maybe_amount)
@@ -165,9 +165,9 @@ def cost_categories_handler() -> str:
 
 
 def is_same_month(data1: DATA_DATE, data2: DATA_DATE) -> bool:
-    first_check = (data1[1] == data2[1])
-    second_check = (data1[2] == data2[2])
-    return first_check and second_check
+    manth_check = (data1[1] == data2[1])
+    year_check = (data1[2] == data2[2])
+    return manth_check and year_check
 
 
 def is_date_before_or_equal(date1: DATA_DATE, date2: DATA_DATE) -> bool:
