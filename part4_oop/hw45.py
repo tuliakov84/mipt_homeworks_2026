@@ -24,8 +24,7 @@ class DictStorage(Storage[K, V]):
         return key in self._data
 
     def remove(self, key: K) -> None:
-        if self.exists(key):
-            self._data.pop(key, None)
+        self._data.pop(key, None)
 
     def clear(self) -> None:
         self._data.clear()
@@ -35,10 +34,6 @@ class DictStorage(Storage[K, V]):
 class FIFOPolicy(Policy[K]):
     capacity: int = 5
     _order: list[K] = field(default_factory=list, init=False)
-
-    def __init__(self, capacity: int = 5) -> None:
-        self._order = []
-        self.capacity = capacity
 
     def register_access(self, key: K) -> None:
         if key not in self._order:
@@ -68,10 +63,6 @@ class LRUPolicy(Policy[K]):
     capacity: int = 5
     _order: list[K] = field(default_factory=list, init=False)
 
-    def __init__(self, capacity: int = 5) -> None:
-        self._order = []
-        self.capacity = capacity
-
     def register_access(self, key: K) -> None:
         self.remove_key(key)
         self._order.append(key)
@@ -99,17 +90,13 @@ class LRUPolicy(Policy[K]):
 class LFUPolicy(Policy[K]):
     capacity: int = 5
     _key_counter: dict[K, int] = field(default_factory=dict, init=False)
-
-    def __init__(self, capacity: int = 5):
-        self.capacity = capacity
-        self._key_counter = {}
-        self._last_key: K | None = None
+    _last_key: K | None = None
 
     def register_access(self, key: K) -> None:
         if key not in self._key_counter:
             self._key_counter[key] = 0
+            self._last_key = key
         self._key_counter[key] += 1
-        self._last_key = key
 
     def get_key_to_evict(self) -> K | None:
         size = len(self._key_counter)
@@ -126,8 +113,6 @@ class LFUPolicy(Policy[K]):
         return key_to_del
 
     def remove_key(self, key: K) -> None:
-        if key not in self._key_counter:
-            return
         self._key_counter.pop(key)
 
     def clear(self) -> None:
@@ -152,8 +137,8 @@ class MIPTCache(Cache[K, V]):
         self.storage.set(key, value)
 
     def get(self, key: K) -> V | None:
-        self.policy.register_access(key)
         if self.storage.exists(key):
+            self.policy.register_access(key)
             return self.storage.get(key)
         return None
 
