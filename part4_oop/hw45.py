@@ -99,16 +99,18 @@ class LFUPolicy(Policy[K]):
         self._key_counter[key] += 1
 
     def get_key_to_evict(self) -> K | None:
-        size = len(self._key_counter)
-        if size < self.capacity:
+        if len(self._key_counter) < self.capacity:
             return None
+
         key_to_del = None
+        min_count = 0
+
         for key in self._key_counter:
             key_count = self._key_counter[key]
-            key_is_none_check = key_to_del is None
-            key_is_last_check = key != self._last_key
-            count_check = (key_to_del is not None) and key_count < self._key_counter[key_to_del]
-            if key_is_none_check or (key_is_last_check and count_check):
+            if key_to_del is None or key_count < min_count:
+                key_to_del = key
+                min_count = key_count
+            elif key_count == min_count and key == self._last_key:
                 key_to_del = key
         return key_to_del
 
