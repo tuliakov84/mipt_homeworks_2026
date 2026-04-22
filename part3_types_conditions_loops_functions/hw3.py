@@ -22,8 +22,10 @@ AMOUNT_KEY = "amount"
 DATE_KEY = "date"
 CATEGORY_KEY = "category"
 
-DAYS_IN_MONTH1 = (31, 28, 31, 30, 31, 30)
-DAYS_IN_MONTH2 = (31, 31, 30, 31, 30, 31)
+DAYS_IN_MONTH = (
+    31, 28, 31, 30, 31, 30,
+    31, 31, 30, 31, 30, 31
+)
 
 DATA_DATE = tuple[int, int, int]
 RESULT_OF_CALC = tuple[float, float, dict[str, float]]
@@ -55,10 +57,8 @@ def is_leap_year(year: int) -> bool:
 
 def get_days_in_month(month: int, year: int) -> int:
     if month == FEBRUARY_NUMBER and (is_leap_year(year)):
-        return DAYS_IN_MONTH1[month - 1] + 1
-    if month > MAGIC_NUMBER:
-        return DAYS_IN_MONTH2[month - 7]
-    return DAYS_IN_MONTH1[month - 1]
+        return DAYS_IN_MONTH[month - 1] + 1
+    return DAYS_IN_MONTH[month - 1]
 
 
 def extract_date(maybe_dt: str) -> DATA_DATE | None:
