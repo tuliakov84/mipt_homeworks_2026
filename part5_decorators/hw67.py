@@ -88,11 +88,11 @@ class CircuitBreaker:
         return f"{func.__module__}.{func.__name__}"
 
     def _handle_failure(self, func: CallableWithMeta[P, R_co], error: Exception) -> None:
-        if self._failures + 1 >= self.critical_count:
+        self._failures += 1
+        if self._failures >= self.critical_count:
             self._failures = self.critical_count
             self.time_of_closure = datetime.now(UTC)
             raise BreakerError(TOO_MUCH, self._get_func_name(func), self.time_of_closure) from error
-        self._failures += 1
 
 
 circuit_breaker = CircuitBreaker(5, 30, Exception)
