@@ -216,19 +216,14 @@ def process_income_transaction(amount: float, month_income: float) -> float:
 
 
 def process_detailes_transaction(
-    amount: float,
-    category: str,
-    details_by_category: DETAILES_CAT_DATA
+    amount: float, category: str, details_by_category: DETAILES_CAT_DATA
 ) -> DETAILES_CAT_DATA:
     target_category = get_target_category(category)
     details_by_category[target_category] = details_by_category.get(target_category, 0) + amount
     return details_by_category
 
 
-def check_info_tr(
-    transaction: TRANSACTION_DATA,
-    date: DATA_DATE
-) -> bool:
+def check_info_tr(transaction: TRANSACTION_DATA, date: DATA_DATE) -> bool:
     tr_date = transaction.get(DATE_KEY)
     if tr_date is None:
         return True
@@ -263,9 +258,7 @@ def process_transaction(
 
 
 def process_transaction_detailes(
-    transaction: TRANSACTION_DATA,
-    date: DATA_DATE,
-    details_by_category: DETAILES_CAT_DATA
+    transaction: TRANSACTION_DATA, date: DATA_DATE, details_by_category: DETAILES_CAT_DATA
 ) -> dict[str, float]:
     if check_info_tr(transaction, date):
         return details_by_category
@@ -276,9 +269,7 @@ def process_transaction_detailes(
 
     category = transaction.get(CATEGORY_KEY)
     if category is not None:
-        details_by_category = process_detailes_transaction(
-            amount, category, details_by_category
-        )
+        details_by_category = process_detailes_transaction(amount, category, details_by_category)
     return details_by_category
 
 
