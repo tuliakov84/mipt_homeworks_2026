@@ -36,6 +36,8 @@ class CircuitBreaker:
         triggers_on: type[Exception] = Exception,
     ) -> None:
         exceptions = []
+        if not (isinstance(triggers_on, type) and issubclass(triggers_on, Exception)):
+            exceptions.append(ValueError("Triggers on must be an exception type"))
         if not isinstance(critical_count, int) or critical_count <= 0:
             exceptions.append(ValueError(INVALID_CRITICAL_COUNT))
         if not isinstance(time_to_recover, int) or time_to_recover <= 0:
